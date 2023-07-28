@@ -1,43 +1,40 @@
-const express = require('express');
-let books = require("./booksdb.js");
-let isValid = require("./auth_users.js").isValid;
-let users = require("./auth_users.js").users;
-const public_users = express.Router();
+const axios = require('axios');
 
+const executeTasks = async () => {
+    // Task 10: Get the list of all books
+    try {
+        const responseAllBooks = await axios.get('http://localhost:3000/books');
+        console.log(responseAllBooks.data);
+    } catch (error) {
+        console.error(error);
+    }
 
-public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+    // Task 11: Get the details of a specific book based on ISBN
+    const isbn = '1';
+    try {
+        const responseBookByISBN = await axios.get(`http://localhost:3000/book/${isbn}`);
+        console.log(responseBookByISBN.data);
+    } catch (error) {
+        console.error(error);
+    }
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+    // Task 12: Get the details of books based on Author
+    const author = 'Chinua Achebe';
+    try {
+        const responseBookByAuthor = await axios.get(`http://localhost:3000/booksbyauthor/${author}`);
+        console.log(responseBookByAuthor.data);
+    } catch (error) {
+        console.error(error);
+    }
 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
- });
-  
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+    // Task 13: Get the details of books based on Title
+    const title = 'Things Fall Apart';
+    try {
+        const responseBookByTitle = await axios.get(`http://localhost:3000/booksbytitle/${title}`);
+        console.log(responseBookByTitle.data);
+    } catch (error) {
+        console.error(error);
+    }
+};
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
-
-//  Get book review
-public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
-
-module.exports.general = public_users;
+executeTasks();
