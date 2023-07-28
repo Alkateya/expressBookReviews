@@ -1,40 +1,63 @@
-const axios = require('axios');
+const express = require('express');
+const public_users = express.Router();
+const books = require('./booksdb.js');
 
-const executeTasks = async () => {
-    // Task 10: Get the list of all books
-    try {
-        const responseAllBooks = await axios.get('http://localhost:3000/books');
-        console.log(responseAllBooks.data);
-    } catch (error) {
-        console.error(error);
+public_users.get('/',function (req, res) {
+    res.send(JSON.stringify(books));
+});
+
+public_users.get('/isbn/:isbn',function (req, res) {
+    let isbn = req.params.isbn;
+    if (books[isbn]) {
+        res.send(JSON.stringify(books[isbn]));
+    } else {
+        res.status(404).send(`Book with ISBN: ${isbn} not found.`);
     }
+});
 
-    // Task 11: Get the details of a specific book based on ISBN
-    const isbn = '1';
-    try {
-        const responseBookByISBN = await axios.get(`http://localhost:3000/book/${isbn}`);
-        console.log(responseBookByISBN.data);
-    } catch (error) {
-        console.error(error);
+public_users.get('/author/:author',function (req, res) {
+    let author = req.params.author;
+    let booksByAuthor = [];
+    for (let isbn in books) {
+        if (books[isbn].author === author) {
+            booksByAuthor.push(books[isbn]);
+        }
     }
-
-    // Task 12: Get the details of books based on Author
-    const author = 'Chinua Achebe';
-    try {
-        const responseBookByAuthor = await axios.get(`http://localhost:3000/booksbyauthor/${author}`);
-        console.log(responseBookByAuthor.data);
-    } catch (error) {
-        console.error(error);
+    if (booksByAuthor.length > 0) {
+        res.send(JSON.stringify(booksByAuthor));
+    } else {
+        res.status(404).send(`No books found by author: ${author}.`);
     }
+});
 
-    // Task 13: Get the details of books based on Title
-    const title = 'Things Fall Apart';
-    try {
-        const responseBookByTitle = await axios.get(`http://localhost:3000/booksbytitle/${title}`);
-        console.log(responseBookByTitle.data);
-    } catch (error) {
-        console.error(error);
+public_users.get('/title/:title',function (req, res) {
+    let title = req.params.title;
+    let booksByTitle = [];
+    for (let isbn in books) {
+        if (books[isbn].title === title) {
+            booksByTitle.push(books[isbn]);
+        }
     }
-};
+    if (booksByTitle.length > 0) {
+        res.send(JSON.stringify(booksByTitle));
+    } else {
+        res.status(404).send(`No books found with title: ${title}.`);
+    }
+});
 
-executeTasks();
+public_users.get('/review/:isbn',function (req, res) {
+    let isbn = req.params.isbn;
+
+    if (books[isbn]) {
+        let reviews = books[isbn].reviews;
+        if (Object.keys(reviews).length > 0) {
+            res.send(JSON.stringify(reviews));
+        } else {
+            res.status(404).send(`No reviews found for book with ISBN: ${isbn}.`);
+        }
+    } else {
+        res.status(404).send(`Book with ISBN: ${isbn} not found.`);
+    }
+});
+
+module.exports = public_users;
